@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Application/Application.iml" filepath="$PROJECT_DIR$/Application/Application.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-YuvTools.iml" filepath="$PROJECT_DIR$/android-YuvTools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/android-YuvTools-master.iml" filepath="$PROJECT_DIR$/.idea/modules/android-YuvTools-master.iml" group="android-YuvTools-master" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Application/android-YuvTools-master-Application.iml" filepath="$PROJECT_DIR$/.idea/modules/Application/android-YuvTools-master-Application.iml" group="android-YuvTools-master/Application" />
+    </modules>
+  </component>
+</project>
