@@ -250,7 +250,9 @@ public class Camera2BasicFragment extends Fragment
     };
 
     protected void handleImage(ImageReader reader) {
-            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
+        Image image = reader.acquireNextImage();
+
+        mBackgroundHandler.post(new ImageSaver(image, mFile));
     }
 
     /**
@@ -530,7 +532,7 @@ public class Camera2BasicFragment extends Fragment
                 Size largest = Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
                         new CompareSizesByArea());
-                mImageReader = ImageReader.newInstance(640, 480,
+                mImageReader = ImageReader.newInstance(1920, 1080,
                         ImageFormat.YUV_420_888, /*maxImages*/2);
                 mImageReader.setOnImageAvailableListener(
                         mOnImageAvailableListener, mBackgroundHandler);

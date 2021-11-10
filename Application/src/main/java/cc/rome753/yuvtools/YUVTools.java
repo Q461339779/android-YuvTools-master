@@ -1,8 +1,10 @@
 package cc.rome753.yuvtools;
 
 import android.graphics.Bitmap;
+import android.graphics.ImageFormat;
 import android.media.Image;
 import android.media.ImageReader;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 
@@ -10,6 +12,7 @@ public class YUVTools {
 
     /******************************* YUV420旋转算法 *******************************/
 
+    public static final String TAG = "YUVTools_";
     // I420或YV12顺时针旋转
     public static void rotateP(byte[] src, byte[] dest, int w, int h, int rotation) {
         switch (rotation) {
@@ -401,6 +404,19 @@ public class YUVTools {
      */
     public static ImageBytes getBytesFromImageReader(ImageReader imageReader) {
         try (Image image = imageReader.acquireNextImage()) {
+//            Log.i(TAG,"image format: " +image.getFormat());
+//            Image.Plane[] planes = image.getPlanes();
+//            for (int i = 0; i < planes.length; i++) {
+//                ByteBuffer iBuffer = planes[i].getBuffer();
+//                int iSize = iBuffer.remaining();
+//                Log.i(TAG, "i_pixelStride                       " + planes[i].getPixelStride());
+//                Log.i(TAG, "i_rowStride                         " + planes[i].getRowStride());
+//                Log.i(TAG, "i_width                             " + image.getWidth());
+//                Log.i(TAG, "i_height                            " + image.getHeight());
+//                Log.i(TAG, "i_buffer size                       " + iSize);
+//                Log.i(TAG, "i_Finished reading data from plane  " + i);
+//            }
+
             return getBytesFromImage(image);
         } catch (Exception e) {
             e.printStackTrace();
@@ -408,6 +424,11 @@ public class YUVTools {
         return null;
     }
 
+    /**
+     *
+     * @param image
+     * @return
+     */
     public static ImageBytes getBytesFromImage(Image image) {
         final Image.Plane[] planes = image.getPlanes();
 
@@ -446,6 +467,61 @@ public class YUVTools {
         return new ImageBytes(bytes, w0, h0);
     }
 
+    /**
+     * 将 YUV 420 的 YV12 格式 转为 nv21 格式
+     *
+     * @param yv12bytes 转换之前的YV12格式数据
+     * @param nv21bytes 转换之后的NV21格式数据
+     * @param width     数据 宽
+     * @param height    数据 高
+     */
+    public static void YV12toNV21(byte[]yv12bytes, byte[] nv21bytes, int width, int height) {
+        int totle = width * height; //Y数据的长度
+        int nLen = totle / 4;  //U、V数据的长度
+        System.arraycopy(yv12bytes, 0, nv21bytes, 0, width * height);
+        for (int i = 0; i < nLen; i++) {
+            nv21bytes[totle + 2 * i + 1] = yv12bytes[totle  + nLen + i];
+            nv21bytes[totle + 2 * i] = yv12bytes[totle + i];
+        }
+    }
+
+    /**
+     * 将 YUV 420 的 YV12 格式 转为 I420 格式
+     *
+     * @param yv12bytes 转换之前的YV12格式数据
+     * @param i420bytes 转换之后的i420格式数据
+     * @param width     数据 宽
+     * @param height    数据 高
+     */
+    private void YV12toI420(byte[]yv12bytes, byte[] i420bytes, int width, int height) {
+        int totle = width * height; //Y数据的长度
+        System.arraycopy(yv12bytes, 0, i420bytes, 0,totle);
+        System.arraycopy(yv12bytes, totle + totle/4, i420bytes, totle,totle/4);
+        System.arraycopy(yv12bytes, totle, i420bytes, totle + totle/4,totle/4);
+    }
+
+
+    /**
+     * 将 YUV 420 的 NV21 格式 转为 I420 格式
+     * @param nv21bytes 转换之前的NV21格式数据
+     * @param i420bytes 转换之后的i420格式数据
+     * @param width     数据 宽
+     * @param height    数据 高
+     *
+     * NV21 is a 4:2:0 YCbCr, For 1 NV21 pixel: YYYYYYYY VUVU I420YUVSemiPlanar
+     * is a 4:2:0 YUV, For a single I420 pixel: YYYYYYYY UVUV Apply NV21 to
+     * I420YUVSemiPlanar(NV12) Refer to https://wiki.videolan.org/YUV/
+     */
+    private void NV21toI420SemiPlanar(byte[] nv21bytes, byte[] i420bytes,
+                                      int width, int height) {
+        int totle = width * height; //Y数据的长度
+        int nLen = totle / 4;  //U、V数据的长度
+        System.arraycopy(nv21bytes, 0, i420bytes, 0, totle);
+        for (int i = 0; i < nLen; i++) {
+            i420bytes[totle + i] = nv21bytes[totle + 2 * i];
+            i420bytes[totle + nLen + i] = nv21bytes[totle + 2 * i + 1];
+        }
+    }
     static {
         System.loadLibrary("yuv420");
     }

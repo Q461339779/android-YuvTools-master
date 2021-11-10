@@ -63,11 +63,14 @@ public class YUVDetectView extends FrameLayout {
 
     public void input(final ImageReader imageReader) {
         final ImageBytes imageBytes = YUVTools.getBytesFromImageReader(imageReader);
-        if(imageBytes != null) {
-            final int w = isFlip ? imageBytes.height : imageBytes.width;
-            final int h = isFlip ? imageBytes.width : imageBytes.height;
-            displayImage(imageBytes.bytes, w, h);
-        }
+        /**
+         * 设置图片显示
+         */
+//        if(imageBytes != null) {
+//            final int w = isFlip ? imageBytes.height : imageBytes.width;
+//            final int h = isFlip ? imageBytes.width : imageBytes.height;
+//            displayImage(imageBytes.bytes, w, h);
+//        }
     }
 
     public void input(final Image image) {
@@ -106,6 +109,8 @@ public class YUVDetectView extends FrameLayout {
         final Bitmap b0 = YUVTools.i420ToBitmap(buf, rw, rh);
 
         YUVTools.rotateP(data, buf, w, h, rotation);
+//        byte[] nv21buf = new byte[data.length];
+//        YUVTools.YV12toNV21(buf,nv21buf,w,h);
         final Bitmap b1 = YUVTools.yv12ToBitmap(buf, rw, rh);
 
         YUVTools.rotateSP(data, buf, w, h, rotation);
@@ -113,6 +118,7 @@ public class YUVDetectView extends FrameLayout {
 
         YUVTools.rotateSP(data, buf, w, h, rotation);
         final Bitmap b3 = YUVTools.nv21ToBitmap(buf, rw, rh);
+        //final Bitmap b3 = YUVTools.nv21ToBitmap(nv21buf, rw, rh);
 
         time = System.currentTimeMillis() - time;
         Log.d("YUVDetectView", "convert time: " + time);

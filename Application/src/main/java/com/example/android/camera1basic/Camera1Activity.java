@@ -135,6 +135,9 @@ public class Camera1Activity extends AppCompatActivity implements Camera.Preview
         final int w = size.width;
         final int h = size.height;
         ydv.inputAsync(data, w, h);
+
+
+
     }
 }
 

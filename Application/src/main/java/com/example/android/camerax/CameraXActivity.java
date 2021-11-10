@@ -28,12 +28,13 @@ import androidx.camera.core.PreviewConfig;
 import com.example.android.camera2basic.R;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 
 import cc.rome753.yuvtools.MainActivity;
 import cc.rome753.yuvtools.YUVDetectView;
 
 public class CameraXActivity extends AppCompatActivity {
-
+    public static final String TAG = "YUVTools_";
     private TextureView viewFinder;
     private YUVDetectView imageView;
 
@@ -62,8 +63,8 @@ public class CameraXActivity extends AppCompatActivity {
     private void startCamera() {
         // 1. preview
         PreviewConfig previewConfig = new PreviewConfig.Builder()
-                .setTargetAspectRatio(new Rational(1, 1))
-                .setTargetResolution(new Size(1920,1080))
+                .setTargetAspectRatio(new Rational(16, 9))
+                .setTargetResolution(new Size(1920, 1080))
                 .build();
 
         Preview preview = new Preview(previewConfig);
@@ -81,7 +82,7 @@ public class CameraXActivity extends AppCompatActivity {
 
         // 2. capture
         ImageCaptureConfig imageCaptureConfig = new ImageCaptureConfig.Builder()
-                .setTargetAspectRatio(new Rational(1,1))
+                .setTargetAspectRatio(new Rational(1, 1))
                 .setCaptureMode(ImageCapture.CaptureMode.MIN_LATENCY)
                 .build();
         final ImageCapture imageCapture = new ImageCapture(imageCaptureConfig);
@@ -112,8 +113,8 @@ public class CameraXActivity extends AppCompatActivity {
         ImageAnalysisConfig imageAnalysisConfig = new ImageAnalysisConfig.Builder()
                 .setCallbackHandler(new Handler(handlerThread.getLooper()))
                 .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
-                .setTargetAspectRatio(new Rational(1, 1))
-//                .setTargetResolution(new Size(600, 600))
+                .setTargetAspectRatio(new Rational(16, 9))
+                .setTargetResolution(new Size(1920, 1080))
                 .build();
 
         ImageAnalysis imageAnalysis = new ImageAnalysis(imageAnalysisConfig);
@@ -134,7 +135,7 @@ public class CameraXActivity extends AppCompatActivity {
         float centerX = viewFinder.getWidth() / 2f;
         float centerY = viewFinder.getHeight() / 2f;
 
-        float[] rotations = {0,90,180,270};
+        float[] rotations = {0, 90, 180, 270};
         // Correct preview output to account for display rotation
         float rotationDegrees = rotations[viewFinder.getDisplay().getRotation()];
 
@@ -149,8 +150,20 @@ public class CameraXActivity extends AppCompatActivity {
         @Override
         public void analyze(ImageProxy imageProxy, int rotationDegrees) {
             final Image image = imageProxy.getImage();
-            if(image != null) {
+            if (image != null) {
                 Log.d("chao", image.getWidth() + "," + image.getHeight());
+                Log.i(TAG,"image format: " +image.getFormat());
+                Image.Plane[] planes = image.getPlanes();
+                for (int i = 0; i < planes.length; i++) {
+                    ByteBuffer iBuffer = planes[i].getBuffer();
+                    int iSize = iBuffer.remaining();
+                    Log.i(TAG, "i_pixelStride                       " + planes[i].getPixelStride());
+                    Log.i(TAG, "i_rowStride                         " + planes[i].getRowStride());
+                    Log.i(TAG, "i_width                             " + image.getWidth());
+                    Log.i(TAG, "i_height                            " + image.getHeight());
+                    Log.i(TAG, "i_buffer size                       " + iSize);
+                    Log.i(TAG, "i_Finished reading data from plane  " + i);
+                }
                 imageView.input(image);
             }
         }

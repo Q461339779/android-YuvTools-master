@@ -116,10 +116,7 @@ public class Camera1Preview extends FrameLayout implements SurfaceHolder.Callbac
             // Center the child SurfaceView within the parent.
             if (width * previewHeight > height * previewWidth) {
                 final int scaledChildWidth = previewWidth * height / previewHeight;
-                child.layout(1, 0,
-                        1920, height);
-
-                //child.layout(0, 0, width, height);
+                child.layout(1, 0, 1920, height);
             } else {
                 final int scaledChildHeight = previewHeight * width / previewWidth;
                 child.layout(0, (height - scaledChildHeight) / 2,
